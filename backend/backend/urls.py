@@ -1,8 +1,9 @@
-from django.contrib import admin # noqa I005
-from django.urls import include, path # noqa I001
-from rest_framework import routers # noqa I001
-# noqa I004
-from api import views # noqa I001
+# flake8: noqa
+from django.contrib import admin
+from django.urls import include, path
+from rest_framework import routers
+
+from api import views
 
 router = routers.DefaultRouter()
 router.register('tasks', views.TaskView, 'task')

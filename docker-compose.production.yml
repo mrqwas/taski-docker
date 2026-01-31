@@ -1,31 +1,43 @@
-# docker-compose.production.yml
+# docker-compose.production.yml для Taski
+version: '3'
 
 volumes:
-  pg_data_production:
-  static_volume:
+  taski_pg_data:  # Изменяем имя volume
+  taski_static:   # Изменяем имя volume
 
-# Всё отличие — заменяем build на image и указываем, какой образ использовать
 services:
-  db:
+  taski_db:  # Меняем имя контейнера
     image: postgres:13.10
-    env_file: .env
+    env_file: .env  # Используем отдельный .env файл
     volumes:
-      - pg_data_production:/var/lib/postgresql/data
-  backend:
-    image: mrqwas/taski_backend # Качаем с Docker Hub
-    env_file: .env
-    volumes:
-      - static_volume:/backend_static
-  frontend:
-    image: mrqwas/taski_frontend  # Качаем с Docker Hub
-    env_file: .env
-    command: cp -r /app/build/. /frontend_static/
-    volumes:
-      - static_volume:/frontend_static
-  gateway:
-    image: mrqwas/taski_gateway  # Качаем с Docker Hub
-    env_file: .env
-    volumes:
-      - static_volume:/staticfiles/
+      - taski_pg_data:/var/lib/postgresql/data
     ports:
-      - 8000:80
+      - 5433:5432  # Изменяем порт на хосте
+
+  taski_backend:  # Меняем имя контейнера
+    image: mrqwas/taski_backend
+    env_file: .env  # Используем отдельный .env файл
+    volumes:
+      - taski_static:/backend_static
+    depends_on:
+      - taski_db
+    ports:
+      - 8001:8000  # Изменяем порт на хосте
+
+  taski_frontend:  # Меняем имя контейнера
+    image: mrqwas/taski_frontend
+    env_file: .env  # Используем отдельный .env файл
+    command: cp -r /app/build/. /static/
+    volumes:
+      - taski_static:/static
+
+  taski_gateway:  # Меняем имя контейнера
+    image: mrqwas/taski_gateway
+    env_file: .env  # Используем отдельный .env файл
+    volumes:
+      - taski_static:/staticfiles/
+    ports:
+      - 8000:80  # Taski будет на порту 8000 (Kittygram на 9000)
+    depends_on:
+      - taski_backend
+      - taski_frontend
