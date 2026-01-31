@@ -11,8 +11,6 @@ services:
     env_file: .env  # Используем отдельный .env файл
     volumes:
       - taski_pg_data:/var/lib/postgresql/data
-    ports:
-      - 5433:5432  # Изменяем порт на хосте
 
   taski_backend:  # Меняем имя контейнера
     image: mrqwas/taski_backend
@@ -21,8 +19,6 @@ services:
       - taski_static:/backend_static
     depends_on:
       - taski_db
-    ports:
-      - 8001:8000  # Изменяем порт на хосте
 
   taski_frontend:  # Меняем имя контейнера
     image: mrqwas/taski_frontend
